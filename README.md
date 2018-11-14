@@ -1,37 +1,92 @@
-## Welcome to GitHub Pages
+# API для підключення Asterisk / FreePBX до Clinica Web
 
-You can use the [editor on GitHub](https://github.com/medakadem/ClinicaWebAsteriskAPI.uk-ua/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Для підключення власної АТС побудованої на [Asterisk](https://www.asterisk.org/) / [FreePBX](https://www.freepbx.org/) необхідно провести наступні налаштування.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Створити методи POST для повідомлення про наступні події
 
-### Markdown
+- Вхідний дзвінок
+- Вихідний дзвінок
+- Підняли трубку
+- Поклали трубку
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Всі повідомлення повинні відправляти запити на наступну адресу
 
 ```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+https://example.com/host/api/Binotel/Push
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+Замість _example.com_ необхідно вказати адресу вашої _CRM Clinica Web_
 
-### Jekyll Themes
+## Опис методів
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/medakadem/ClinicaWebAsteriskAPI.uk-ua/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+### Вхідний дзвінок
 
-### Support or Contact
+Приклад вихідного коду на PHP для відправлення POST запиту
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+```markdown
+$postData = array(
+    'didNumber' => '0443334000',
+    'externalNumber' => '0670219424',
+    'internalNumber' => '801',
+    'generalCallID' => '2744830',
+    'callType' => '0',
+    'companyID' => '3041',
+    'requestType' => 'receivedTheCall'
+);
+```
+
+### Вихідний дзвінок
+
+Приклад вихідного коду на PHP для відправлення POST запиту
+
+```markdown
+$postData = array(
+    'externalNumber' => '0670219424',
+    'internalNumber' => '904',
+    'generalCallID' => '2744830',
+    'callType' => '1',
+    'companyID' => '3041',
+    'requestType' => 'receivedTheCall'
+);
+```
+
+### Підняли трубку
+
+Приклад вихідного коду на PHP для відправлення POST запиту
+
+```markdown
+$postData = array(
+    'didNumber' => '0442334000',
+    'externalNumber' => '0670219424',
+    'internalNumber' => '904',
+    'generalCallID' => '2744830',
+    'callType' => '0',
+    'companyID' => '3041',
+    'requestType' => 'answeredTheCall'
+);
+```
+
+### Поклали трубку
+
+Приклад вихідного коду на PHP для відправлення POST запиту
+
+```markdown
+$postData = array(
+    'generalCallID' => '2744830',
+    'billsec' => '35',
+    'companyID' => '3041',
+    'requestType' => 'hangupTheCall'
+);
+```
+
+## Опис параметрів
+
+```markdown
+- externalNumber - телефонний номер клієнта
+- internalNumber - внутрішній номер співробітника / групи в віртуальної АТС
+- requestType - тип PUSH запиту (receivedTheCall-надходження дзвінка, answeredTheCall-підняття трубки (відповідь на дзвінок), hangupTheCall- завершення дзвінка)
+- generalCallID - головний ідентифікатор дзвінка (унікальне для одного дзвінка)
+- callType - тип дзвінка: вхідний - 0, вихідний - 1
+- companyID - ідентифікатор компанії (не обов'язково)
+- billsec - тривалість розмови
+```
