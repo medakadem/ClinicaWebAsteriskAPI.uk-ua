@@ -12,7 +12,7 @@
 ### Всі повідомлення повинні відправляти запити на наступну адресу
 
 ```markdown
-https://example.com/host/api/Binotel/Push
+https://example.com/api/Binotel/Push
 ```
 
 Замість _example.com_ необхідно вказати адресу вашої _CRM Clinica Web_
